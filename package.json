@@ -1,19 +1,25 @@
 {
   "name": "circuit-city",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "CIRCUIT CITY - The first economy where circuits are citizens. Ignix TapeOut Genesis Transistor Hackathon entry on X Layer.",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test test/*.test.mjs && hardhat test",
+    "compile": "hardhat compile",
+    "demo": "python3 -m http.server 8943 --directory app"
   },
-  "keywords": [],
+  "keywords": [
+    "tapeout",
+    "xlayer",
+    "hackathon"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^6.1.2",
     "hardhat": "^2.29.1"
-  }
+  },
+  "private": true
 }

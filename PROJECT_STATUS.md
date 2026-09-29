@@ -1,16 +1,21 @@
 CIRCUIT CITY STATUS
 
-SUBMISSION STATUS: NOT READY
-CURRENT PHASE: PHASE 1 完成 → 进入 PHASE 2/3（Constitution + 垂直切片）
-WHAT WORKS: 官方规则与链参数核验完成；项目仓库已初始化
-WHAT IS REAL ON-CHAIN: 暂无（所有链上动作需用户钱包签名，见 docs/DEPLOYMENT_RUNBOOK.md）
-PROCESSOR: 未创建（不可逆操作，等待用户确认与执行）
-CIRCUITS: 暂无（Constitution 网表已设计，待在我们 Processor 上流片）
+SUBMISSION STATUS: NOT READY（PHASE 1–4 代码侧完成；主网动作待用户执行 docs/DEPLOYMENT_RUNBOOK.md）
+CURRENT PHASE: PHASE 4 完成 → PHASE 5（真实集成，等用户钱包动作）/ PHASE 6 材料并行推进
+WHAT WORKS:
+- Constitution 电路网表（6 NAND，TapeOut 语义）+ JS 仿真器，5/5 测试通过（1111→APPROVED；1101→REJECTED；16 组全表）
+- Solidity 链上求值器（与网表逐门一致）+ CircuitCityLedger（Citizen 注册 / ENERGY / proposeTrade /
+  APPROVED·REJECTED 事件证据 / 防重放 / 权限边界 / 一次性冻结的 TapeOut 证据绑定），8/8 Hardhat 测试通过
+- 前端（app/）：CITY + TRANSACTION LAB + ARCHITECTURE，X Layer 网络检测与一键切换，诚实标注
+  MAINNET / PENDING / ROADMAP；ABI 编码已与 ethers 标准逐字节比对一致
+WHAT IS REAL ON-CHAIN: 暂无——所有主网动作需用户钱包签名（见 docs/DEPLOYMENT_RUNBOOK.md 的 4 个 STOP 点）
+PROCESSOR: 未创建（参数提案与理由已写入 runbook STEP 1）
+CIRCUITS: Constitution 网表已定稿，待流片（runbook STEP 3，销毁 6 NAND）
 CONTAINERS: 未开通（P1）
 TX HASHES: 暂无
-TEST STATUS: 未开始（PHASE 2 中建立）
-BLOCKERS: 无 P0 技术阻塞。Processor 创建/流片/矿工铸造需用户钱包执行（属协议设计，非阻塞——可并行开发）
-NEXT ACTION: 实现 Constitution NAND 网表 + 本地仿真器 + EnergyLedger 合约与测试
+TEST STATUS: 13/13 通过（node 5 + hardhat 8）
+BLOCKERS: 无技术阻塞。唯一待办：X Layer 工厂地址需在部署时从官方 UI 读取（已按规则标注，不编造）
+NEXT ACTION: 用户按 runbook 执行 STEP 1–5；期间 AI 继续 PHASE 6 材料与 P1（Living CPU City 视觉）
 
 === 关键已核验事实（来源见 docs/VERIFIED_FACTS.md）===
 - 比赛：TapeOut Genesis Transistor Hackathon（Ignix × X Layer）
