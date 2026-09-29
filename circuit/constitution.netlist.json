@@ -1,0 +1,35 @@
+{
+  "name": "constitution-circuit",
+  "version": "1.0.0",
+  "description": "CIRCUIT CITY Constitution Circuit netlist in TapeOut semantics. Single source of truth: this netlist is (1) simulated in JS, (2) ported to Solidity for on-chain parity, (3) drawn on the tapeout.net canvas and taped out on the CIRCUIT CITY Processor on X Layer.",
+  "semantics": {
+    "elements": ["NAND", "INPUT"],
+    "nand": "output = NOT(a AND b); inputs are pointers to element outputs",
+    "input": "free input pin, value supplied per evaluation",
+    "tick": "combinational evaluation order given by topo order; no feedback loops used in v1",
+    "burn": "each element consumes exactly one NAND transistor token from the owning Processor at tape-out"
+  },
+  "io": {
+    "inputs": [
+      { "pin": "I0", "name": "citizenValid", "meaning": "actor is a registered Circuit Citizen in good standing" },
+      { "pin": "I1", "name": "balanceEnough", "meaning": "proposed action amount <= actor balance (e.g. SELL amount <= ENERGY)" },
+      { "pin": "I2", "name": "resourceEnough", "meaning": "resource (ENERGY) exists in the city ledger for this action" },
+      { "pin": "I3", "name": "actionAllowed", "meaning": "action type is permitted and caller is authorized (not replayed, correct role)" }
+    ],
+    "outputs": [
+      { "pin": "O0", "name": "APPROVED", "meaning": "1 = APPROVED, 0 = REJECTED" }
+    ]
+  },
+  "gates": [
+    { "id": "G4", "type": "NAND", "a": "I0", "b": "I1" },
+    { "id": "G5", "type": "NAND", "a": "G4", "b": "G4" },
+    { "id": "G6", "type": "NAND", "a": "I2", "b": "I3" },
+    { "id": "G7", "type": "NAND", "a": "G6", "b": "G6" },
+    { "id": "G8", "type": "NAND", "a": "G5", "b": "G7" },
+    { "id": "G9", "type": "NAND", "a": "G8", "b": "G8" }
+  ],
+  "outputs": { "O0": "G9" },
+  "nandCount": 6,
+  "latchCount": 0,
+  "notes": "APPROVED = citizenValid AND balanceEnough AND resourceEnough AND actionAllowed, built purely from NAND (double-NAND as inverter). Required demo vectors: (1,1,1,1)->1 APPROVED; (1,0,1,1)->1^? -> (1,0,1,1) has balanceEnough=0 -> REJECTED, matching master prompt example 1101 -> REJECTED."
+}
