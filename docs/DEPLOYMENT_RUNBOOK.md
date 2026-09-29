@@ -20,22 +20,22 @@
 
 ## STEP 1 🛑 STOP — 创建 Processor（不可逆，真实资金）
 
-**位置**：https://tapeout.net → 连接钱包 → 切换/选择 **X Layer 网络** → Create Processor
+**位置**：https://tapeout.net → 「项目」→「＋ 创建项目」（表单字段已实测核验）
 
 **ACTION**: create processor（TapeOut factory，X Layer 主网）
-**PARAMETERS**（建议值，创建前按 UI 实际字段核对）：
-| 参数 | 建议值 | 理由 |
+**表单填写**（已实测字段：名称 / 型号 / 描述 / 数量 / 单价）：
+| 字段 | 建议值 | 理由 |
 |---|---|---|
 | 名称 | `CIRCUIT CITY` | 品牌一致 |
-| NAND 总量（supply） | `21,000,000` | 致敬 21M；足够数千条电路（Constitution 仅需 6 NAND），留足社区流片空间 |
-| LATCH 总量 | `4,200,000` | NAND 的 20%；状态型 Citizen（P1）需要记忆单元 |
-| 单价（unit price） | `0.00001 OKB` | 极低门槛 → 最大化参与与流片量（评审看重使用而非价格） |
-| cap | 不可增发（如 UI 支持 cap=supply） | 公开披露、不可变，符合评审"资产发行设计" |
+| 型号 | `CONSTITUTION CPU` | 说明用途 |
+| 描述 | The first economy where circuits are citizens. Circuits burned from ATOM transistors become citizens; the Constitution is itself a circuit that approves or rejects every economic action. | 评委 10 秒读懂 |
+| 数量（supply，即上限） | `21000000` NAND + 如分 LATCH `4200000` | 致敬 21M；Constitution 仅需 6 NAND，留足社区流片空间；创建后不可改（无独立 cap 字段） |
+| 单价 | `0.00001 OKB` | 全网最低（竞品 0.000066–0.00066），零门槛最大化流片参与；别人铸造时单价收入归创建者，可 OKB 领取 |
 
-**EXPECTED COST**: 创建交易 gas（X Layer 上通常 < 0.01 OKB）
-**IRREVERSIBILITY**: Processor 参数（supply/price/cap）创建后不可更改
+**EXPECTED COST**: 创建交易 gas（X Layer 极低）；铸造另收协议费 0.00066 OKB/笔
+**IRREVERSIBILITY**: Processor 参数（supply/单价）创建后**不可更改**（无独立 cap 字段，supply 即上限）
 **RISK**: 低——仅 gas；但参数错误无法回滚
-**EXPECTED RESULT**: 得到 **Processor 合约地址**（形如 `0x…`）
+**EXPECTED RESULT**: 得到 **Processor 合约地址**（形如 `0x…`，独立 ERC-721 合约即项目身份）
 
 完成后：
 - 记录 Processor 地址 → 填入 `app/config.js` 的 `PROCESSOR_ADDRESS`
@@ -49,16 +49,16 @@
 
 **位置**：我们的 Processor 详情页 → Mint
 
-**PARAMETERS**: NAND × `100`，LATCH × `20`（按建议单价成本 ≈ 0.0012 OKB）
-**EXPECTED COST**: 铸造费 + gas，合计通常 < 0.01 OKB
-**IRREVERSIBILITY**: 低（铸出来的晶体管会留在钱包，未流片不消耗）
-**EXPECTED RESULT**: 钱包内出现 NAND/LATCH 晶体管余额
+**PARAMETERS**: NAND × `100`（ Constitution 只需 6，其余留给社区流片与 MINER/扩展电路）
+**EXPECTED COST**: 100 × 0.00001 OKB + 协议费 0.00066 OKB/笔 ≈ 0.0017 OKB
+**IRREVERSIBILITY**: 低（未流片的晶体管留在钱包，不消耗）
+**EXPECTED RESULT**: 钱包内出现本 Processor 的 NAND 晶体管余额（每台 Processor 有自己的 ERC-1155 晶体管合约）
 
 ---
 
 ## STEP 3 🛑 STOP — 流片 Constitution Circuit（真实销毁 6 个 NAND，不可逆）
 
-**位置**：tapeout.net 画布（Canvas）→ 选择我们 Processor 的晶体管 → 按下表连线 → TAPE OUT
+**位置**：tapeout.net 画布（Canvas）→ 拖入 NAND 连线 → 右侧「**流片到哪条链**」选 **X Layer** → TAPE OUT
 
 **连线表**（与 `circuit/constitution.netlist.json` 完全一致，逐门核对）：
 
@@ -75,7 +75,7 @@
 | NAND G8 | G5 | G7 |
 | NAND G9 | G8 | G8 |
 
-**输出**：O0 = G9（1 = APPROVED，0 = REJECTED）
+**输出**：O0 = G9（1 = APPROVED，0 = REJECTED）；输入按小端位序打包：I0=bit0, I1=bit1, I2=bit2, I3=bit3
 
 画布内先用免费本地仿真验证真值表：
 `1111→1`；`1101→0`；`1110→0`；`0111→0`；其余 12 组输入除 `1111` 外全为 0。
@@ -83,6 +83,17 @@
 **EXPECTED COST**: 销毁 6 NAND（≈ 0.00006 OKB）+ gas
 **IRREVERSIBILITY**: 晶体管永久销毁，Circuit NFT 永久存在
 **EXPECTED RESULT**: 得到 **Constitution Circuit NFT tokenId**（我们 Processor 上的第一条电路）
+
+**流片后立即做免费链上核验**（只读，任何人可复现——评委验证路径）：
+
+```bash
+# 期望 APPROVED（1111 → 0x0F）返回 0x01；期望 REJECTED（1101 → 0x0D）返回 0x00
+cast call <PROCESSOR地址> "eval(uint256,bytes)" <电路编号> 0x0f --rpc-url https://rpc.xlayer.tech
+cast call <PROCESSOR地址> "eval(uint256,bytes)" <电路编号> 0x0d --rpc-url https://rpc.xlayer.tech
+```
+
+> 已于 2026-09-30 在真实主网用同类调用验证过该接口（Book of Life 电路 #11：
+> eval(11,0x00)→0x00、eval(11,0xff)→0x01），接口与小端位序编码确认无误。
 
 完成后：
 - Circuit ID → `app/config.js` 的 `CONSTITUTION_CIRCUIT_ID`

@@ -34,5 +34,25 @@
 
 - [ ] TapeOut X Layer Processor Factory 合约地址：从 tapeout.net 官方前端（X Layer 网络视图）读取，
       以官方前端/UI 显示为准，不采用任何第三方转述地址
-- [ ] Processor 创建 UI 的确切参数表单与 gas 成本
-- [ ] 流片（Tape Out）在我们 Processor 上的确切操作路径与成本
+- [ ] ~~Processor 创建 UI 的确切参数表单与 gas 成本~~ ✅ 已核验（见下）
+- [ ] 流片（Tape Out）在我们 Processor 上的确切操作路径与成本 ✅ 已核验（见下）
+
+## 官方前端实测（2026-09-30 用真实浏览器打开 tapeout.net 核验，只读未签名）
+
+- **X Layer 处理器列表**：首页「X Layer · Base」标签，共 289 台 L2 处理器（含 Book of Life、
+  Yuan Station 等）。深链格式：`tapeout.net/#l2/<链>/<0x处理器地址>`
+- **创建 Processor 表单字段**（「＋ 创建项目」）：名称（如 "My 4004"）、型号（如 "CPU"）、描述、
+  **数量**（supply，默认 100000）、**单价**（默认 0.00066 OKB）→「连接钱包并创建」。
+  创建即部署一个**独立 ERC-721 合约**作为项目身份。无独立 cap 字段（supply 即上限，创建后不可改）
+- **铸造费用**：单价 × 数量 + **协议费 0.00066 OKB/笔**；X Layer 上用 OKB 支付，钱包自动切链
+- **别人铸造时单价部分记到创建者名下，用 OKB 领取**（创建者收入机制）
+- **流片到 X Layer 的路径**：打开画布 → 右侧「流片到哪条链」选 **X Layer**
+- **电路 = 永久链上函数（免费验证，任何人可调用）**：
+  ABI 为 `eval(uint256,bytes) view returns (bytes)`，直接部署在 **Processor 合约**上；
+  组合逻辑用 `eval`，含时序单元用 `step`；输入/输出按**小端位序**打包成 bytes；
+  调用方式：`cast call <processor> "eval(uint256,bytes)" <circuitId> 0x… --rpc-url https://rpc.xlayer.tech`
+- **✅ 已实测（2026-09-30，真实主网 eth_call，只读）**：
+  `eval(11, 0x00) → 0x00`、`eval(11, 0xff) → 0x01`（Book of Life 处理器 0x1488…E4CC 电路 #11）。
+  接口与小端位序编码端到端跑通 → 我们的 Constitution 流片后可用同一接口被任何人免费核验
+- 每台 Processor 有自己的晶体管 ERC-1155 合约（如 Book of Life：0xE0D5…516A）
+- 竞品定价参考（X Layer）：0.000066 OKB（Book of Life）、0.0001 OKB（Yuan Station）、0.00066 OKB（Once/RADAR）

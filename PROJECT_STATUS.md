@@ -1,21 +1,21 @@
 CIRCUIT CITY STATUS
 
-SUBMISSION STATUS: NOT READY（PHASE 1–4 代码侧完成；主网动作待用户执行 docs/DEPLOYMENT_RUNBOOK.md）
-CURRENT PHASE: PHASE 4 完成 → PHASE 5（真实集成，等用户钱包动作）/ PHASE 6 材料并行推进
+SUBMISSION STATUS: NOT READY（差主网动作：runbook 4 个 STOP 点，预计 30–45 分钟用户操作）
+CURRENT PHASE: PHASE 6 材料完成 → 等待用户执行 PHASE 5（runbook STEP 1–5）→ 回填后即 READY
 WHAT WORKS:
-- Constitution 电路网表（6 NAND，TapeOut 语义）+ JS 仿真器，5/5 测试通过（1111→APPROVED；1101→REJECTED；16 组全表）
-- Solidity 链上求值器（与网表逐门一致）+ CircuitCityLedger（Citizen 注册 / ENERGY / proposeTrade /
-  APPROVED·REJECTED 事件证据 / 防重放 / 权限边界 / 一次性冻结的 TapeOut 证据绑定），8/8 Hardhat 测试通过
-- 前端（app/）：CITY + TRANSACTION LAB + ARCHITECTURE，X Layer 网络检测与一键切换，诚实标注
-  MAINNET / PENDING / ROADMAP；ABI 编码已与 ethers 标准逐字节比对一致
-WHAT IS REAL ON-CHAIN: 暂无——所有主网动作需用户钱包签名（见 docs/DEPLOYMENT_RUNBOOK.md 的 4 个 STOP 点）
-PROCESSOR: 未创建（参数提案与理由已写入 runbook STEP 1）
-CIRCUITS: Constitution 网表已定稿，待流片（runbook STEP 3，销毁 6 NAND）
+- Constitution 电路网表（6 NAND）+ JS 仿真器（5/5）；Solidity 链上求值器 + Ledger（8/8）——13/13 测试通过
+- 前端：CITY / TRANSACTION LAB / ARCHITECTURE；SIMULATION 预部署演示（明确标注）；
+  MAINNET 模式含「真实流片电路 eval 交叉核验」步骤；X Layer 检测/切换
+- 提交材料全套：README / SUBMISSION / DEMO_SCRIPT / FINAL_CHECKLIST / SECURITY
+WHAT IS REAL ON-CHAIN: 官方 eval 接口已于 2026-09-30 在真实主网验证（Book of Life #11：
+  eval(11,0x00)→0x00、eval(11,0xff)→0x01）；本项目自身的链上动作待用户钱包执行
+PROCESSOR: 未创建（表单字段已实测核验：名称/型号/描述/数量/单价；协议费 0.00066 OKB/笔）
+CIRCUITS: Constitution 网表定稿；画布流片路径已核验（右侧「流片到哪条链」选 X Layer）
 CONTAINERS: 未开通（P1）
 TX HASHES: 暂无
-TEST STATUS: 13/13 通过（node 5 + hardhat 8）
-BLOCKERS: 无技术阻塞。唯一待办：X Layer 工厂地址需在部署时从官方 UI 读取（已按规则标注，不编造）
-NEXT ACTION: 用户按 runbook 执行 STEP 1–5；期间 AI 继续 PHASE 6 材料与 P1（Living CPU City 视觉）
+TEST STATUS: 13/13 通过
+BLOCKERS: 无。全部官方事实已核验（创建表单/费用/eval ABI/小端位序/深链格式/竞品定价）
+NEXT ACTION: 用户执行 docs/DEPLOYMENT_RUNBOOK.md STEP 1–5 → 回填 config → STEP 6 跑双 demo → 置 READY
 
 === 关键已核验事实（来源见 docs/VERIFIED_FACTS.md）===
 - 比赛：TapeOut Genesis Transistor Hackathon（Ignix × X Layer）

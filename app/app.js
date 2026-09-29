@@ -142,6 +142,54 @@
   }
 
   // ---- demo flows ----
+
+  // Real TapeOut circuit cross-check: eval(circuitId, packedInput) on the Processor
+  // contract (free view call, ABI verified live on mainnet 2026-09-30).
+  // Little-endian bit packing: I0=bit0 … I3=bit3 → 1111=0x0F, 1101=0x0D.
+  const hasRealCircuit = () => !!(CFG.PROCESSOR_ADDRESS && CFG.CONSTITUTION_CIRCUIT_ID);
+  async function evalRealCircuit(cv, be, re, aa) {
+    const packed = (cv ? 1 : 0) | ((be ? 1 : 0) << 1) | ((re ? 1 : 0) << 2) | ((aa ? 1 : 0) << 3);
+    const selEval = "934d06ea"; // eval(uint256,bytes) — verified against official UI + live call
+    const data = "0x" + selEval + encUint(CFG.CONSTITUTION_CIRCUIT_ID) +
+      encUint(0x40) + encUint(1) + packed.toString(16).padStart(2, "0").padEnd(64, "0");
+    const hex = await callContract(CFG.PROCESSOR_ADDRESS, data);
+    const bytes = hex.replace(/^0x/, "").match(/.{2}/g) || [];
+    return bytes[bytes.length - 1] ? parseInt(bytes[bytes.length - 1], 16) & 1 : 0;
+  }
+
+  // SIMULATION state (pre-deployment demo; always labeled SIMULATION)
+  const sim = { minerEnergy: 5, merchantEnergy: 0 };
+
+  async function runSimTrade(kind) {
+    const amount = kind === "valid" ? CFG.DEMO.VALID_SELL_AMOUNT : CFG.DEMO.INVALID_SELL_AMOUNT;
+    const box = $("decision");
+    box.classList.remove("hidden", "approved", "rejected");
+    box.textContent = "Evaluating Constitution (SIMULATION — local state, not a transaction)…";
+
+    const cv = 1, be = sim.minerEnergy >= amount ? 1 : 0, re = amount > 0 ? 1 : 0, aa = 1;
+    const dec = evaluate(cv === 1, be === 1, re === 1, aa === 1);
+    let circuitNote = "real taped-out circuit: PENDING TAPE-OUT (see docs/DEPLOYMENT_RUNBOOK.md STEP 3)";
+    if (hasRealCircuit() && CFG.NETWORK) {
+      try {
+        const real = await evalRealCircuit(cv, be, re, aa);
+        circuitNote = `real taped-out circuit eval → ${real} ${real === dec ? "✓ matches" : "✗ MISMATCH"}`;
+      } catch (e) { circuitNote = "real circuit eval failed: " + e.message; }
+    }
+    if (dec === 1) { sim.minerEnergy -= amount; sim.merchantEnergy += amount; }
+    $("miner-energy").textContent = sim.minerEnergy + " ⚡ (sim)";
+    $("merchant-energy").textContent = sim.merchantEnergy + " ⚡ (sim)";
+    box.classList.add(dec ? "approved" : "rejected");
+    box.textContent =
+      `[SIMULATION — local state; no transaction was sent]\n` +
+      `CONSTITUTION EVALUATION\n` +
+      `citizenValid=${cv}  balanceEnough=${be}  resourceEnough=${re}  actionAllowed=${aa}\n` +
+      `netlist vector ${cv}${be}${re}${aa} → gate G9 → decision=${dec}\n` +
+      `${circuitNote}\n\n` +
+      (dec ? `✓ APPROVED — ${amount} ENERGY transferred (simulated state).\nRun for real after mainnet deployment (runbook STEP 4).`
+           : `✗ REJECTED — no invalid update occurs. Energy ✗ (balance ${sim.minerEnergy + amount} < ${amount}).`);
+    log(`SIMULATION: SELL ${amount} ENERGY → ${dec ? "APPROVED" : "REJECTED"} (local, labeled)`);
+  }
+
   async function runTrade(kind) {
     const amount = kind === "valid" ? CFG.DEMO.VALID_SELL_AMOUNT : CFG.DEMO.INVALID_SELL_AMOUNT;
     const box = $("decision");
@@ -173,6 +221,11 @@
         `citizenValid=${cv}  balanceEnough=${be}  resourceEnough=${re}  actionAllowed=${aa}\n` +
         `netlist vector ${pins} → gate G9 → decision=${dec}\n` +
         `parity with taped-out netlist: OK\n` +
+        (hasRealCircuit() ? await (async () => {
+          const real = await evalRealCircuit(cv === 1, be === 1, re === 1, aa === 1);
+          if (real !== dec) throw new Error("real taped-out circuit disagrees with ledger decision");
+          return `REAL CIRCUIT CROSS-CHECK: eval(${CFG.CONSTITUTION_CIRCUIT_ID}, packed) → ${real} ✓ (free view call on Processor)\n`;
+        })() : `real taped-out circuit: PENDING TAPE-OUT\n`) +
         (dec ? `submitting SELL ${amount} ENERGY transaction…` : `REJECTED — no transaction will move any state. Submitting proposal for on-chain evidence…`);
 
       if (dec !== 1 && kind === "valid") throw new Error("valid demo unexpectedly rejected — check ledger state");
@@ -244,10 +297,16 @@
     log("Wallet connected: " + short(acc));
   });
   $("btn-switch").addEventListener("click", () => switchToXLayer().then(() => location.reload()));
-  $("btn-valid").addEventListener("click", () => runTrade("valid"));
-  $("btn-invalid").addEventListener("click", () => runTrade("invalid"));
+  $("btn-valid").addEventListener("click", () => CFG.LEDGER_ADDRESS ? runTrade("valid") : runSimTrade("valid"));
+  $("btn-invalid").addEventListener("click", () => CFG.LEDGER_ADDRESS ? runTrade("invalid") : runSimTrade("invalid"));
 
   if (!CFG.LEDGER_ADDRESS) {
-    log("SIMULATION MODE — ledger not deployed yet. TRANSACTION LAB activates after mainnet deployment (see docs/DEPLOYMENT_RUNBOOK.md).");
+    // Pre-deployment: buttons run the clearly-labeled SIMULATION demo.
+    $("btn-valid").disabled = false;
+    $("btn-invalid").disabled = false;
+    $("miner-energy").textContent = sim.minerEnergy + " ⚡ (sim)";
+    $("merchant-energy").textContent = sim.merchantEnergy + " ⚡ (sim)";
+    log("SIMULATION MODE — ledger not deployed yet. Buttons run a clearly-labeled local demo; after runbook STEP 4 they execute real wallet-signed transactions.");
+    if (!hasRealCircuit()) log("Constitution circuit: PENDING TAPE-OUT (runbook STEP 1–3).");
   }
 })();
