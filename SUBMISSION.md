@@ -6,30 +6,33 @@
 
 | # | 官方要求 | 本项目对应 | 状态 |
 |---|---|---|---|
-| 1 | Processor 必须通过 TapeOut factory 部署在 X Layer 主网 | tapeout.net「＋ 创建项目」创建 CIRCUIT CITY Processor | ⏳ runbook STEP 1 |
+| 1 | Processor 必须通过 TapeOut factory 部署在 X Layer 主网 | CIRCUIT CITY Processor `0x8B61D4ad238F2f5BA6A8720444C5A6613f2e62F4` | ✅ 已主网核验 |
 | 2 | 晶体管 supply、单价、cap 部署时设定并公开披露 | NAND supply 21,000,000；单价 0.00001 OKB；无增发（supply 即上限，创建后不可改）——本文档即公开披露 | ⏳ STEP 1 后回填地址 |
-| 3 | 窗口关闭前至少 1 条电路在自家 Processor 上流片 | Constitution Circuit：6 NAND 真实销毁流片，电路即 Constitution 本体 | ⏳ runbook STEP 3 |
+| 3 | 窗口关闭前至少 1 条电路在自家 Processor 上流片 | Constitution Circuit #1：6 NAND 逻辑网表，官方编译后真实销毁 8 NAND | ✅ tx status=1 |
 | 4 | 清晰的 use case | 见下「Use case」 | ✅ |
 | 5 | 提交 Processor 合约地址、部署钱包、产品 demo、项目描述 | 见下 | ⏳ 回填 |
 
 ## 提交字段（官方要求的四项）
 
-- **Processor contract address**: `PENDING`
-- **Deployment wallet**: `PENDING`
-- **Product demo**: `PENDING`（前端地址 / 演示视频，runbook STEP 6 后确定）
+- **Processor contract address**: `0x8B61D4ad238F2f5BA6A8720444C5A6613f2e62F4`
+- **Deployment wallet**: `0x8d155fb58f9152b84ec84e744ec0df56318a1fa9`
+- **Product demo**: 本仓库 `app/`（真实 X Layer Ledger 已配置；双 demo 交易见下表）
 - **Project description**: 见 README.md；一句话版：*"CIRCUIT CITY is the first economy where circuits are citizens — a Constitution circuit (6 real burned NAND gates, taped out on our X Layer processor) approves or rejects every economic action between circuit citizens, with every verdict verifiable on-chain for free."*
 
 ## 已核验的真实地址 / ID / 交易（全部可浏览器验证）
 
 | Item | Value | Evidence |
 |---|---|---|
-| Processor contract | `PENDING` | explorer link `PENDING` |
-| Constitution Circuit ID | `PENDING` | eval 验证命令见 README |
-| Ledger contract (X Layer) | `PENDING` | explorer link `PENDING` |
-| Processor creation tx | `PENDING` | — |
-| Tape-out tx (6 NAND burned) | `PENDING` | — |
-| VALID demo tx (SELL 3 → APPROVED) | `PENDING` | — |
-| INVALID demo tx (SELL 10 → REJECTED) | `PENDING` | — |
+| Processor contract | `0x8B61D4ad238F2f5BA6A8720444C5A6613f2e62F4` | X Layer mainnet code and name/symbol read verified |
+| Constitution Circuit ID | `1` | `eval(1, 0x0f)=0x01`; `eval(1, 0x0d)=0x00` |
+| Ledger contract (X Layer) | `0xd3052061e238b41b8c285ccafad190fa9de87606` | X Layer 主网部署 receipt status=1 |
+| Ledger deploy tx | `0x1aa6e1207fedce05db6e04611845fec6ac38e17c4c62bc364c061152924e59f0` | owner=MINER |
+| Tape-out tx (8 NAND burned) | `0x1d068793a1fa801ec0a2811c51a0f30c70a251b36ea6cc8ca291cb17bc900230` | receipt status=1; Circuit NFT #1 minted to `0x93bf…42d3` |
+| MINER registration tx | `0xc0d9042c4f3f6869cbf0cba67840bff4192c81ab3008881869667febe69202c3` | status=1; citizen #001, ENERGY=5 |
+| MERCHANT registration tx | `0x94c3c4f82d37d553b8289bd484b6285e8ff24a8a173714328cd713914dd05d8a` | status=1; citizen #002, ENERGY=0 |
+| Evidence binding tx | `0x2e73b0df6942781db2036d37562ab6c4326eaebd34413afdc3acb94ad0407631` | status=1; Processor + Circuit #1 frozen |
+| VALID demo tx (SELL 3 → APPROVED) | `0x346bfeed31bf802c148beae3ec748cb840ecf058b3876dbcf54fc5d5c59d8ef0` | status=1; balances 5→2 / 0→3 |
+| INVALID demo tx (SELL 10 → REJECTED) | `0x7d07b30fe9e332aa3ec6d1f9a435075f5dfc82223a0f80fc054b74638ab096b8` | status=1; balance remains 2 / 3 |
 
 ## Use case
 

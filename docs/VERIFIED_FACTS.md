@@ -32,6 +32,15 @@
 
 ## 待办核验（不阻塞开发，执行部署前必须完成）
 
+## CIRCUIT CITY 主网实测（2026-10-01）
+
+- Processor：`0x8B61D4ad238F2f5BA6A8720444C5A6613f2e62F4`，X Layer 主网只读确认 name=`CIRCUIT CITY`、symbol=`CONSTITUTION CPU`。
+- Constitution Circuit：tokenId `1`，流片交易 `0x1d068793a1fa801ec0a2811c51a0f30c70a251b36ea6cc8ca291cb17bc900230`，receipt `status=1`。官方编译器销毁 8 NAND 并铸造 Circuit NFT 给 `0x93bf59d2128a1f7c8366d8091c31efa3f62842d3`。
+- 免费链上核验：`eval(1, 0x0f) -> 0x01`；`eval(1, 0x0d) -> 0x00`。这与 Constitution “仅四项条件都为真时批准”的真值表一致。
+- Ledger：`0xd3052061e238b41b8c285ccafad190fa9de87606`，部署 tx `0x1aa6e1207fedce05db6e04611845fec6ac38e17c4c62bc364c061152924e59f0`（status=1，owner=MINER）。
+- 配置 tx 均为 X Layer receipt `status=1`：MINER #001 `0xc0d9042c4f3f6869cbf0cba67840bff4192c81ab3008881869667febe69202c3`；MERCHANT #002 `0x94c3c4f82d37d553b8289bd484b6285e8ff24a8a173714328cd713914dd05d8a`；不可变证据绑定 `0x2e73b0df6942781db2036d37562ab6c4326eaebd34413afdc3acb94ad0407631`。
+- 双 demo：SELL 3 tx `0x346bfeed31bf802c148beae3ec748cb840ecf058b3876dbcf54fc5d5c59d8ef0` 事件为 APPROVED，余额为 2 / 3；SELL 10 tx `0x7d07b30fe9e332aa3ec6d1f9a435075f5dfc82223a0f80fc054b74638ab096b8` 事件为 REJECTED（Energy check failed），余额仍为 2 / 3。
+
 - [ ] TapeOut X Layer Processor Factory 合约地址：从 tapeout.net 官方前端（X Layer 网络视图）读取，
       以官方前端/UI 显示为准，不采用任何第三方转述地址
 - [ ] ~~Processor 创建 UI 的确切参数表单与 gas 成本~~ ✅ 已核验（见下）

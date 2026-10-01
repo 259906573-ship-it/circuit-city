@@ -24,7 +24,7 @@ TapeOut lets a blockchain act as silicon: NAND/LATCH transistor tokens (ERC-1155
 
 ```
 ATOM (transistor tokens)
-  → TAPE OUT (burn 6 NAND on the CIRCUIT CITY Processor, X Layer mainnet)
+  → TAPE OUT (Constitution netlist: 6 NAND; TapeOut compiler burned 8 NAND on the CIRCUIT CITY Processor, X Layer mainnet)
     → CONSTITUTION CIRCUIT (Circuit NFT — permanent on-chain function)
       → decided by eval(): citizenValid · balanceEnough · resourceEnough · actionAllowed
         → 1 = APPROVED / 0 = REJECTED
@@ -77,11 +77,11 @@ Filled in `app/config.js` and `SUBMISSION.md` after the mainnet runbook steps:
 
 | Item | Value |
 |---|---|
-| Processor contract | `PENDING` |
-| Constitution Circuit ID | `PENDING` |
-| Ledger contract | `PENDING` |
-| Deployment wallet | `PENDING` |
-| Creation / tape-out / demo tx hashes | `PENDING` |
+| Processor contract | `0x8B61D4ad238F2f5BA6A8720444C5A6613f2e62F4` |
+| Constitution Circuit ID | `1` — tape-out tx `0x1d068793a1fa801ec0a2811c51a0f30c70a251b36ea6cc8ca291cb17bc900230`; eval(1, 0x0f)=1, eval(1, 0x0d)=0 |
+| Ledger contract | `0xd3052061e238b41b8c285ccafad190fa9de87606` |
+| Deployment wallet | `0x8d155fb58f9152b84ec84e744ec0df56318a1fa9` |
+| Ledger / valid / invalid tx hashes | `0x1aa6e1207fedce05db6e04611845fec6ac38e17c4c62bc364c061152924e59f0` / `0x346bfeed31bf802c148beae3ec748cb840ecf058b3876dbcf54fc5d5c59d8ef0` / `0x7d07b30fe9e332aa3ec6d1f9a435075f5dfc82223a0f80fc054b74638ab096b8` |
 
 ## Tests (all executed, 13/13 passing)
 
